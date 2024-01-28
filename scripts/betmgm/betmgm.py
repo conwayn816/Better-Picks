@@ -1,21 +1,29 @@
 # Nate
 import requests
+import constants
 
+def getBets(data, bet_types):
+    bets = []
+    
 
-
+    return bets
 
 
 if __name__ == "__main__":
-    url = 'https://sports.tn.betmgm.com/en/sports/api/widget/widgetdata?layoutSize=Small& page=CompetitionLobby&sportId=7&regionId=9&competitionId=6004&compoundCompetitionId=1:6004&widgetId=/mobilesports-v1.0/layout/layout_us/modules/basketball/nba/nba-gamelines-complobby&shouldIncludePayload=true'
-
-    response = requests.get(url)   
+    url = constants.url
+    headers = constants.headers
+    response = requests.get(url, headers=headers)   
 
     if response.status_code == 200:
-        print(response.json())
+        data = response.json()
     else:
         print("Error: " + str(response.status_code))
 
     
-    
+    bet_types = ['Moneyline', 'Spread'] 
 
+    bets = getBets(data, bet_types)
+
+    for bet in bets:
+        print(bet)
 
