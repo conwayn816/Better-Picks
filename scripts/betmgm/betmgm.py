@@ -4,6 +4,15 @@ import constants
 
 def getBets(data, bet_types):
     bets = []
+    items = data.get("widgets")[0].get("payload").get("items")
+    fixtures = items[0].get("activeChildren")[0].get("payload").get("fixtures")
+    
+    games = [] #stores each game in a list
+    for fixture in fixtures:
+        games.append(fixture.get("games"))
+    
+    
+    
     
 
     return bets
@@ -20,10 +29,8 @@ if __name__ == "__main__":
         print("Error: " + str(response.status_code))
 
     
-    bet_types = ['Moneyline', 'Spread'] 
+    bet_types = ['Moneyline', 'Spread', 'Total Points'] 
 
-    bets = getBets(data, bet_types)
+    getBets(data, bet_types)
 
-    for bet in bets:
-        print(bet)
 
