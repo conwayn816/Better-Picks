@@ -9,13 +9,21 @@ response = requests.get(url)
 
 if response.status_code == 200:
     data = response.json()
-  
+
     moneylines = []
 
-    if 'moneylines' in data:
-        moneylines = data['moneylines']
+    for market_id, market_data in data.items():
+        if 'marketType' in market_data and market_data['marketType'] == 'MONEY_LINE':
+            runners = market_data.get('runners', [])
+            for runner in runners:
+                moneyline_info = {
+                    'runnerName': runner['runnerName'],
+                    'winRunnerOdds': runner['winRunnerOdds']['americanDisplayOdds']['americanOdds']
+                }
+                moneylines.append(moneyline_info)
 
     print("Moneylines:", moneylines)
 
 else:
-    print(f"Error Unable to Display Data: {response.status_code}")
+    print(f"Error: Unable to fetch data. Status Code: {response.status_code}")
+
