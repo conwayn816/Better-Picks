@@ -1,0 +1,13 @@
+Matchup:
+    Home Team Name
+    Away Team Name
+    Home Spread Line
+    Home Spread Odds
+    Home ML Odds
+    Away Spread Line
+    Away Spread Odds
+    Away ML Odds
+    Over/Under Line
+    Over Odds
+    Under odds 
+    
