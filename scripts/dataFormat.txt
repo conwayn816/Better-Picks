@@ -1,13 +1,55 @@
-Matchup:
-    Home Team Name
-    Away Team Name
-    Home Spread Line
-    Home Spread Odds
-    Home ML Odds
-    Away Spread Line
-    Away Spread Odds
-    Away ML Odds
-    Over/Under Line
-    Over Odds
-    Under odds 
+  {
+        "home_team": "TOR Raptors",
+        "away_team": "CHA Hornets",
+        "bets": {
+            "Spread": [
+                {
+                    "event": "NBA",
+                    "type": "Spread",
+                    "team": "TOR Raptors",
+                    "line": -7,
+                    "odds": "-112"
+                },
+                {
+                    "event": "NBA",
+                    "type": "Spread",
+                    "team": "CHA Hornets",
+                    "line": 7,
+                    "odds": "-108"
+                }
+            ],
+            "Total": [
+                {
+                    "event": "NBA",
+                    "type": "Total",
+                    "team": "Over",
+                    "line": 226,
+                    "odds": "-110"
+                },
+                {
+                    "event": "NBA",
+                    "type": "Total",
+                    "team": "Under",
+                    "line": 226,
+                    "odds": "-110"
+                }
+            ],
+            "Moneyline": [
+                {
+                    "event": "NBA",
+                    "type": "Moneyline",
+                    "team": "TOR Raptors",
+                    "line": "N/A",
+                    "odds": "-278"
+                },
+                {
+                    "event": "NBA",
+                    "type": "Moneyline",
+                    "team": "CHA Hornets",
+                    "line": "N/A",
+                    "odds": "+225"
+                }
+            ]
+        }
+    },
     
