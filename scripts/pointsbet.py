@@ -2,7 +2,7 @@ import requests
 import json
 
 # Function to fetch data from PointsBet API and save it to a file
-def pb_fetch_and_save(url, filename):
+def pb_fetch_and_save(url):
     # Set the user-agent to avoid 403 Forbidden error
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -24,5 +24,4 @@ def pb_fetch_and_save(url, filename):
 
 if __name__ == "__main__":
     api_url = "https://api.nj.pointsbet.com/api/v2/competitions/105/events/featured?includeLive=false&page=1"
-    output_file = "pointsbet_api_data.json"
-    pb_fetch_and_save(api_url, output_file)
+    pb_fetch_and_save(api_url)
