@@ -99,6 +99,4 @@ if __name__ == "__main__":
     organized_bets = organize_betting_data_ordered(extracted_bets)
     prettifiedJson = json.dumps(organized_bets, indent=4)
     print(prettifiedJson)
-
-    for bet in extracted_bets:
-        print(bet)
+    
