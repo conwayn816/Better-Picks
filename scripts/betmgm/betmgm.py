@@ -53,27 +53,30 @@ def organize_betting_data_ordered(bets):
     current_game = None
 
     for bet in bets:
+        if current_game is None or (len(current_game["bets"]["Spread"]) == 2 and
+                                    len(current_game["bets"]["Total"]) == 2 and
+                                    len(current_game["bets"]["Moneyline"]) == 2):
+            current_game = {
+                "home_team": "",  # Placeholder for home team
+                "away_team": bet["team"],  # first bet is away team
+                "bets": {
+                    "Spread": [],  # Add the first spread bet
+                    "Total": [],  # Placeholder for total bets
+                    "Moneyline": [],  # Placeholder for moneyline bets
+                },
+            }
+            organized_games.append(current_game)
         if bet["type"] == "Spread":
-            if current_game is None or len(current_game["bets"]["Spread"]) == 2:
-                # Start a new game when no current game or both Spread bets have been added
-                current_game = {
-                    "home_team": bet["team"],  # First spread bet is the home team
-                    "away_team": "",  # Placeholder for away team
-                    "bets": {
-                        "Spread": [bet],  # Add the first spread bet
-                        "Total": [],  # Placeholder for total bets
-                        "Moneyline": [],  # Placeholder for moneyline bets
-                    },
-                }
-                organized_games.append(current_game)
-            else:
-                # Second spread bet is the away team for the current game
-                current_game["away_team"] = bet["team"]
+            if current_game is None or len(current_game["bets"]["Spread"]) == 0:
                 current_game["bets"]["Spread"].append(bet)
-        elif bet["type"] == "Total" and current_game is not None:
+            else:
+                # Second spread bet is the home team for the current game
+                current_game["home_team"] = bet["team"]
+                current_game["bets"]["Spread"].append(bet)
+        elif bet["type"] == "Totals" and current_game is not None:
             # Add total bet to the current game
             current_game["bets"]["Total"].append(bet)
-        elif bet["type"] == "Moneyline" and current_game is not None:
+        elif bet["type"] == "Money Line" and current_game is not None:
             # Add moneyline bet to the current game
             current_game["bets"]["Moneyline"].append(bet)
 
