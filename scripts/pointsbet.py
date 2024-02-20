@@ -12,6 +12,8 @@ def getBets(data):
             bet_types = {}
             for types in event['specialFixedOddsMarkets']:
                 if types['eventName'] == "Moneyline" or types['eventName'] == "Point Spread" or types['eventName'] == "Total":
+                    if types['eventName'] == "Point Spread":
+                        types['eventName'] = "Spread"
                     bet_type = types['eventName']
                     bet_type_data = []
                     for outcomes in types['outcomes']:
