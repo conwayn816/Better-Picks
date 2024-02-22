@@ -83,7 +83,7 @@ def organize_betting_data_ordered(bets):
     return organized_games
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     url = constants.url
     headers = constants.headers
     response = requests.get(url, headers=headers)
@@ -98,5 +98,5 @@ if __name__ == "__main__":
     extracted_bets = getBets(data, bet_types)
     organized_bets = organize_betting_data_ordered(extracted_bets)
     prettifiedJson = json.dumps(organized_bets, indent=4)
-    print(prettifiedJson)
+    print(prettifiedJson)'''
     
