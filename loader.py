@@ -1,41 +1,15 @@
-from mongoengine import *
-import betmgm as scraper
+from database.models import Bets
+from database.cleanDB import clean_past_bets
+import scripts.betmgm.betmgm as scraper
+from mongoengine import connect
+import scripts.betmgm as scraper
 import constants
 import requests
-import json
+# import json
 from datetime import datetime
 
 
-class Bets(Document):
-    BetProvider = StringField(required=True)
-    GameTime = DateTimeField(required=True)
-    HomeTeam = StringField(required=True)
-    AwayTeam = StringField(required=True)
-    Bets = DictField(
-        Spread=ListField(
-            DictField(
-                Team=StringField(required=True),
-                Line=FloatField(required=True),
-                Odds=FloatField(required=True),
-            )
-        ),
-        Total=ListField(
-            DictField(
-                Team=StringField(required=True),
-                Line=FloatField(required=True),
-                Odds=FloatField(required=True),
-            )
-        ),
-        Moneyline=ListField(
-            DictField(
-                Team=StringField(required=True),
-                Odds=FloatField(required=True),
-            )
-        ),
-    )
-
-
-if __name__ == "__main__":
+def load_mgm_bets() -> None:
     url = constants.url
     headers = constants.headers
     response = requests.get(url, headers=headers)
@@ -51,7 +25,7 @@ if __name__ == "__main__":
     organized_bets = scraper.organize_betting_data_ordered(extracted_bets)
 
     # Save to MongoDB
-    connect(db='betterPicks', host=constants.MONGO_URI)
+    connect(db="betterPicks", host=constants.MONGO_URI)
     for game in organized_bets:
         datetime_object = datetime.strptime(game["start_time"], "%Y-%m-%dT%H:%M:%SZ")
         bet = Bets(
@@ -92,16 +66,17 @@ if __name__ == "__main__":
                     {
                         "Team": game["bets"]["Moneyline"][1]["team"],
                         "Odds": game["bets"]["Moneyline"][1]["odds"],
-                    }
+                    },
                 ],
             },
         )
         bet.save()
 
-    # Print to console
+    # For testing purposes
+    """Print to console
     for game in Bets.objects:
         print(game.HomeTeam, game.AwayTeam)
         print(game.Bets)
 
     prettifiedJson = json.dumps(organized_bets, indent=4)
-    # print(prettifiedJson)
+    # print(prettifiedJson)"""
