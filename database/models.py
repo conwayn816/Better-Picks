@@ -1,4 +1,11 @@
-from mongoengine import Document, StringField, DateTimeField, DictField, ListField, FloatField
+from mongoengine import (
+    Document,
+    StringField,
+    DateTimeField,
+    DictField,
+    ListField,
+    FloatField,
+)
 
 class Bets(Document):
     BetProvider = StringField(required=True)
