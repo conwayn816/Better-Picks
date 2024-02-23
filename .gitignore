@@ -1,7 +1,11 @@
 scripts/draftkings/myenv
 
+/env
+__pycache__
+constants.py
+
+database/__pycache__
 
 scripts/betmgm/env
 scripts/betmgm/__pycache__
-scripts/betmgm/constants.py
 scripts/betmgm/requirements.txt
