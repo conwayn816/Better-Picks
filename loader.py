@@ -2,14 +2,11 @@ from database.models import Bets
 from database.cleanDB import clean_past_bets
 import scripts.betmgm.betmgm as mgmScraper
 from mongoengine import connect
-import scripts.betmgm as scraper
 import constants
 import requests
-
-# import json
 from datetime import datetime
 
-
+# Calls on the mgm scraper and inserts into database
 def load_mgm_bets() -> None:
     url = constants.mgm_url
     headers = constants.mgm_headers
@@ -18,10 +15,11 @@ def load_mgm_bets() -> None:
     if response.status_code == 200:
         data = response.json()
     else:
-        print("Error: " + str(response.status_code))
+        raise Exception(str(response.status_code)+ ": " + response.text)
 
     bet_types = ["Money Line", "Spread", "Totals"]
 
+    # Call scraper and organize data
     extracted_bets = mgmScraper.getBets(data, bet_types)
     organized_bets = mgmScraper.organize_betting_data_ordered(extracted_bets)
 

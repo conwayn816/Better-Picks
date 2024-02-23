@@ -1,9 +1,8 @@
 # Nate
-import requests
-import constants
-import json
-import datetime
-
+'''
+This script grabs data from the betmgm website 
+and organizes it into a format that can be used to insert into the database.
+'''
 
 def getBets(data, bet_types):
     bets = []

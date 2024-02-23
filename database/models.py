@@ -7,6 +7,7 @@ from mongoengine import (
     FloatField,
 )
 
+# Define the schema for the Bets collection
 class Bets(Document):
     BetProvider = StringField(required=True)
     GameTime = DateTimeField(required=True)
