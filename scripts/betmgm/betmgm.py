@@ -2,6 +2,7 @@
 import requests
 import constants
 import json
+import datetime
 
 def getBets(data, bet_types):
     bets = []
@@ -37,6 +38,7 @@ def getBets(data, bet_types):
                         team = current_team
                     bets.append(
                         {
+                            "start_time": event.get("startDate"),
                             "event": matchups.get(event.get("id")),
                             "type": offer.get("name").get("value"),
                             "team": team,
@@ -57,6 +59,7 @@ def organize_betting_data_ordered(bets):
                                     len(current_game["bets"]["Total"]) == 2 and
                                     len(current_game["bets"]["Moneyline"]) == 2):
             current_game = {
+                "start_time": bet["start_time"],
                 "home_team": "",  # Placeholder for home team
                 "away_team": bet["team"],  # first bet is away team
                 "bets": {
@@ -79,6 +82,7 @@ def organize_betting_data_ordered(bets):
         elif bet["type"] == "Money Line" and current_game is not None:
             # Add moneyline bet to the current game
             current_game["bets"]["Moneyline"].append(bet)
+        
 
     return organized_games
 

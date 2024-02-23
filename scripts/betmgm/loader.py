@@ -3,9 +3,12 @@ import betmgm as scraper
 import constants
 import requests
 import json
+from datetime import datetime
 
 
-class mgmBets(Document):
+class Bets(Document):
+    BetProvider = StringField(required=True)
+    GameTime = DateTimeField(required=True)
     HomeTeam = StringField(required=True)
     AwayTeam = StringField(required=True)
     Bets = DictField(
@@ -50,7 +53,10 @@ if __name__ == "__main__":
     # Save to MongoDB
     connect(db='betterPicks', host=constants.MONGO_URI)
     for game in organized_bets:
-        bet = mgmBets(
+        datetime_object = datetime.strptime(game["start_time"], "%Y-%m-%dT%H:%M:%SZ")
+        bet = Bets(
+            BetProvider="BetMGM",
+            GameTime=datetime_object,
             HomeTeam=game["home_team"],
             AwayTeam=game["away_team"],
             Bets={
@@ -93,7 +99,7 @@ if __name__ == "__main__":
         bet.save()
 
     # Print to console
-    for game in mgmBets.objects:
+    for game in Bets.objects:
         print(game.HomeTeam, game.AwayTeam)
         print(game.Bets)
 
