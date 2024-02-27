@@ -32,7 +32,9 @@ def load_dk_bets() -> None:
     for subcategory in data["featuredDisplayGroup"]["featuredSubcategories"]:
         for event in subcategory.get("events", []):
             event_start_dates[event["eventId"]] = event["startDate"]
-    res = draftkingsScraper.organize_betting_data_ordered(extracted_bets, event_start_dates)
+    res = draftkingsScraper.organize_betting_data_ordered(
+        extracted_bets, event_start_dates
+    )
     for game in res:
         for bet_type, bets in game["bets"].items():
             for bet in bets:
@@ -243,7 +245,6 @@ def load_pb_bets() -> None:
                 },
             )
             bet.save()
-
 
 
 """ ACTUAL CALLS
