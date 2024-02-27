@@ -1,4 +1,4 @@
-#!/Users/alexanderpacheco/Documents/COP4521/Better-Picks/scripts/draftkings/myenv/bin/python3.11
+#!/Users/alexanderpacheco/Documents/COP4521/Better-Picks/scripts/draftkings/myenv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

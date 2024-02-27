@@ -1,12 +1,17 @@
 import requests
 import json
+from datetime import datetime
 
+def parse_date(date_string):
+    date_string = date_string.rstrip('Z')
+    if '.' in date_string:
+        date_string_parts = date_string.split('.')
+        date_string = date_string_parts[0] + '.' + date_string_parts[1][:6]
+    date_object = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%f")
+    return date_object.isoformat() + 'Z'
 
 def extract_bets(data, bet_types):
     bets = []
-    events = data['featuredDisplayGroup'].get('events', [])
-
-
     for offer_group in data['featuredDisplayGroup']['featuredSubcategories']:
         for event_group in offer_group.get('featuredEventGroupSubcategories', []):
             for offer_array in event_group.get('offers', []):
@@ -14,6 +19,7 @@ def extract_bets(data, bet_types):
                     # Ensure 'offer' is a dictionary and contains 'eventId' and 'label'
                     if isinstance(offer, dict) and 'eventId' in offer and 'label' in offer:
                         # Get the matchup for the current event
+                        eventId = offer['eventId']
 
                         if offer['label'] in bet_types or offer['label'] == 'Total':
                             for outcome in offer['outcomes']:
@@ -28,26 +34,30 @@ def extract_bets(data, bet_types):
 
                                 bets.append({
                                     'event': event_group['eventGroupName'],
+                                    'eventId': eventId,
                                     'type': offer['label'],
                                     'team': team,
                                     'line': outcome.get('line', 'N/A'),
-                                    'odds': outcome['oddsAmerican']
+                                    'odds': outcome['oddsAmerican'],
                                 })
 
 
     return bets
 
-def organize_betting_data_ordered(bets):
+def organize_betting_data_ordered(bets, event_start_dates):
     organized_games = []
     current_game = None
 
     for bet in bets:
         if bet['type'] == 'Spread':
             if current_game is None or len(current_game['bets']['Spread']) == 2:
+                game_start_date = parse_date(event_start_dates[bet['eventId']]) if bet['eventId'] in event_start_dates else 'Unknown date'
                 # Start a new game when no current game or both Spread bets have been added
                 current_game = {
+                    'BetProvider': 'DraftKings',
                     'home_team': bet['team'],  # First spread bet is the home team
                     'away_team': '',  # Placeholder for away team
+                    'GameTime': game_start_date,
                     'bets': {
                         'Spread': [bet],  # Add the first spread bet
                         'Total': [],  # Placeholder for total bets
@@ -85,9 +95,13 @@ if __name__ == '__main__':
         print(f"Failed to retrieve data: {response.status_code}")
 
     bet_types = ['Moneyline', 'Spread']
-
     extracted_bets = extract_bets(data, bet_types)
-
-    res = organize_betting_data_ordered(extracted_bets)
-    prettified_json = json.dumps(res, indent=4)
-    print(prettified_json)
+    event_start_dates = {}
+    for subcategory in data['featuredDisplayGroup']['featuredSubcategories']:
+        for event in subcategory.get('events', []): 
+            event_start_dates[event['eventId']] = event['startDate']
+    res = organize_betting_data_ordered(extracted_bets, event_start_dates)
+    for game in res:
+        for bet_type, bets in game['bets'].items():
+            for bet in bets:
+                bet.pop('eventId', None)
