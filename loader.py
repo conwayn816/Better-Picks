@@ -243,16 +243,76 @@ def load_pb_bets() -> None:
                     ],
                 },
             )
-            print(bet.HomeTeam, bet.AwayTeam, bet.GameTime, bet.Bets)
-            #bet.save()
-    ''' TESTING
+            bet.save()
+    """ TESTING
     for game in Bets.objects:
         print(game.HomeTeam, game.AwayTeam)
-        print(game.Bets)'''
+        print(game.Bets)"""
+
+
+def load_caesars_bets() -> None:
+    url = constants.caesars_url
+    headers = constants.caesars_headers
+    bets = caesarsScraper.caesar_fetch(url, headers)
+
+    connect(db="betterPicks", host=constants.MONGO_URI)
+    for game in bets:
+        datetime_object = datetime.strptime(game["start_time"], "%Y-%m-%d %H:%M:%S")
+        existing_game = Bets.objects.filter(
+            BetProvider="Caesars",
+            GameTime=datetime_object,
+            HomeTeam=game["home_team"],
+            AwayTeam=game["away_team"],
+        ).first()
+        if existing_game is None:
+            bet = Bets(
+                BetProvider="Caesars",
+                GameTime=datetime_object,
+                HomeTeam=game["home_team"],
+                AwayTeam=game["away_team"],
+                Bets={
+                    "Spread": [
+                        {
+                            "Team": game["bets"]["Spread"][0]["team"],
+                            "Line": game["bets"]["Spread"][0]["line"],
+                            "Odds": game["bets"]["Spread"][0]["odds"],
+                        },
+                        {
+                            "Team": game["bets"]["Spread"][1]["team"],
+                            "Line": game["bets"]["Spread"][1]["line"],
+                            "Odds": game["bets"]["Spread"][1]["odds"],
+                        },
+                    ],
+                    "Total": [
+                        {
+                            "Team": game["bets"]["Total"][0]["team"],
+                            "Line": game["bets"]["Total"][0]["line"],
+                            "Odds": game["bets"]["Total"][0]["odds"],
+                        },
+                        {
+                            "Team": game["bets"]["Total"][1]["team"],
+                            "Line": game["bets"]["Total"][1]["line"],
+                            "Odds": game["bets"]["Total"][1]["odds"],
+                        },
+                    ],
+                    "Moneyline": [
+                        {
+                            "Team": game["bets"]["Moneyline"][0]["team"],
+                            "Odds": game["bets"]["Moneyline"][0]["odds"],
+                        },
+                        {
+                            "Team": game["bets"]["Moneyline"][1]["team"],
+                            "Odds": game["bets"]["Moneyline"][1]["odds"],
+                        },
+                    ],
+                },
+            )
+            print(bet.HomeTeam, bet.AwayTeam, bet.GameTime)
 
 
 """ ACTUAL CALLS
 load_mgm_bets()
 load_dk_bets()
-"""
 load_pb_bets()
+"""
+load_caesars_bets()
