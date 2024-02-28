@@ -6,7 +6,6 @@ from database.cleanDB import clean_past_bets
 import scripts.betmgm.betmgm as mgmScraper
 import scripts.draftkings.draftkings as draftkingsScraper
 import scripts.caesars as caesarsScraper
-#import scripts.fanduel as fanduelScraper
 import scripts.pointsbet as pointsbetScraper
 
 # Import mongoengine for db interaction

@@ -1,6 +1,7 @@
   {
         "home_team": "TOR Raptors",
         "away_team": "CHA Hornets",
+        "GameTime": DATETIME,
         "bets": {
             "Spread": [
                 {
