@@ -81,7 +81,7 @@ def organize_betting_data_ordered(bets, event_start_dates):
 
 
 
-
+''' FOR TESTING ALONE
 if __name__ == '__main__':
     url = 'https://sportsbook.draftkings.com/sites/US-SB/api/v4/featured/displaygroup/2/subcategories/4511/eventgroup/42648/gamelines?format=json'
 
@@ -105,3 +105,4 @@ if __name__ == '__main__':
         for bet_type, bets in game['bets'].items():
             for bet in bets:
                 bet.pop('eventId', None)
+'''
