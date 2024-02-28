@@ -6,7 +6,7 @@ from database.cleanDB import clean_past_bets
 import scripts.betmgm.betmgm as mgmScraper
 import scripts.draftkings.draftkings as draftkingsScraper
 import scripts.caesars as caesarsScraper
-import scripts.fanduel as fanduelScraper
+#import scripts.fanduel as fanduelScraper
 import scripts.pointsbet as pointsbetScraper
 
 # Import mongoengine for db interaction
@@ -194,7 +194,7 @@ def load_pb_bets() -> None:
 
     connect(db="betterPicks", host=constants.MONGO_URI)
     for game in bets:
-        datetime_object = datetime.strptime(game["start_time"], "%Y-%m-%dT%H:%M:%SZ")
+        datetime_object = datetime.strptime(game["start_time"], "%Y-%m-%d %H:%M:%S")
         existing_game = Bets.objects.filter(
             BetProvider="PointsBet",
             GameTime=datetime_object,
@@ -244,10 +244,16 @@ def load_pb_bets() -> None:
                     ],
                 },
             )
-            bet.save()
+            print(bet.HomeTeam, bet.AwayTeam, bet.GameTime, bet.Bets)
+            #bet.save()
+    ''' TESTING
+    for game in Bets.objects:
+        print(game.HomeTeam, game.AwayTeam)
+        print(game.Bets)'''
 
 
 """ ACTUAL CALLS
 load_mgm_bets()
 load_dk_bets()
 """
+load_pb_bets()
