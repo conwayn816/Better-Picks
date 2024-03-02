@@ -78,7 +78,7 @@ def getBets(data):
     return bets
 
 if __name__ == "__main__":
-    url = "https://api.nj.pointsbet.com/api/v2/sports/basketball/events/featured?includeLive=false"
+    url = "https://api.nj.pointsbet.com/api/v2/sports/basketball/events/featured?includeLive=true"
     # Set the user-agent to avoid 403 Forbidden error
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
