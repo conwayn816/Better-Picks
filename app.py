@@ -1,11 +1,55 @@
 from flask import Flask, render_template, redirect, url_for
 from mongoengine import connect
 import constants
-
+'''
 connect(
     db="betterPicks",
     host=constants.MONGO_URI,
 )
+'''
+
+Bets = [
+    {
+        "BetProvider": "Test Provider",
+        "GameTime": "2024-04-01 12:00:00",
+        "HomeTeam": "Home Team",
+        "AwayTeam": "Away Team",
+        "Bets": {
+            "Spread": [
+                {"Team": "Home Team", "Line": -3.5, "Odds": 100},
+                {"Team": "Away Team", "Line": 3.5, "Odds": -100},
+            ],
+            "Total": [
+                {"Team": "Over", "Line": 50.5, "Odds": 100},
+                {"Team": "Under", "Line": 50.5, "Odds": -100},
+            ],
+            "Moneyline": [
+                {"Team": "Home Team", "Odds": -110},
+                {"Team": "Away Team", "Odds": 100},
+            ],
+        },
+    },
+    {
+        "BetProvider": "Test Provider 2",
+        "GameTime": "2024-04-01 12:00:00",
+        "HomeTeam": "Home Team",
+        "AwayTeam": "Away Team",
+        "Bets": {
+            "Spread": [
+                {"Team": "Home Team", "Line": -4.5, "Odds": 100},
+                {"Team": "Away Team", "Line": 4.5, "Odds": -100},
+            ],
+            "Total": [
+                {"Team": "Over", "Line": 50.5, "Odds": 200},
+                {"Team": "Under", "Line": 50.5, "Odds": -200},
+            ],
+            "Moneyline": [
+                {"Team": "Home Team", "Odds": -100},
+                {"Team": "Away Team", "Odds": -100},
+            ],
+        },
+    },
+]
 
 app = Flask(__name__)
 
