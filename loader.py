@@ -1,3 +1,8 @@
+'''
+These functions load the database with betting data 
+from their respective sportsbooks
+'''
+
 # Database imports
 from database.models import Bets
 from database.cleanDB import clean_past_bets
@@ -314,5 +319,5 @@ def load_caesars_bets() -> None:
 load_mgm_bets()
 load_dk_bets()
 load_pb_bets()
-"""
 load_caesars_bets()
+"""
