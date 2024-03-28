@@ -97,6 +97,3 @@ if __name__ == "__main__":
 
     # Get the bets
     bets = getBets(data)
-
-    # Display of saved bets
-    print(json.dumps(bets,indent = 4))
