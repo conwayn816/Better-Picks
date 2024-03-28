@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        .container {
+            width: 80%; 
+            margin: 50px auto;
+            text-align: center;
+        }
+        .box-title {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .box {
+            display: inline-block;
+            width: calc(70% - 20px);
+            margin-right: 20px;
+            margin-bottom: 20px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .box:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .odds-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-right: 100px;
+        }
+        .line-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-right: 100px;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .button-container form {
+            margin: 0 10px;
+        }
+        .button-container button {
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .provider-odds {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-left: 100px;
+        }
+        .active {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="button-container">
+    <form action="/moneyline" method="post">
+        <button name="view" value="Moneyline" {% if active_view == 'Moneyline' %}class="active"{% endif %}>MONEYLINE</button>
+    </form>
+    <form action="/spread" method="post">
+        <button name="view" value="Spread" {% if active_view == 'Spread' %}class="active"{% endif %}>SPREAD</button>
+    </form>
+    <form action="/total" method="post">
+        <button name="view" value="Total" {% if active_view == 'Total' %}class="active"{% endif %}>TOTAL</button>
+    </form>
+</div>
+
+<div class="container">
+    {% for game in box_items %}
+    <div class="box">
+        <div class="box-title">
+            <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
+        </div>
+        <div class="provider-odds">
+                {% for bet in game['bets'] %}
+                {{ bet['BetProvider'] }}&nbsp;&nbsp;&nbsp;
+                {% endfor %}
+        </div>
+        <div class="odds-container">
+            <p><strong>{{ game['HomeTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
+                {% for bet in game['bets'] %}
+                ({{ bet['HomeTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
+                {% endfor %}
+        </div>
+        <div class="line-container">
+            <p><strong>{{"Line"}}:</strong>&nbsp;&nbsp;&nbsp;
+                {% for bet in game['bets'] %}
+                ({{ bet['HomeTeamBet']['Line'] }})&nbsp;&nbsp;&nbsp;
+                {% endfor %}
+        </div>
+        <div class="odds-container">
+            <p><strong>{{ game['AwayTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
+                {% for bet in game['bets'] %}
+                ({{ bet['AwayTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
+                {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
