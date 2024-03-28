@@ -1,4 +1,4 @@
-teamMap = {
+TEAM_MAP = {
     "Atlanta Hawks": "ATL",
     "Boston Celtics": "BOS",
     "Brooklyn Nets": "BKN",
