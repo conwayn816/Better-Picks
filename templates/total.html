@@ -92,7 +92,7 @@
                 {% endfor %}
         </div>
         <div class="odds-container">
-            <p><strong>{{ game['HomeTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
+            <p><strong>Over:</strong>&nbsp;&nbsp;&nbsp;
                 {% for bet in game['bets'] %}
                 ({{ bet['HomeTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
                 {% endfor %}
@@ -104,7 +104,7 @@
                 {% endfor %}
         </div>
         <div class="odds-container">
-            <p><strong>{{ game['AwayTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
+            <p><strong>Under:</strong>&nbsp;&nbsp;&nbsp;
                 {% for bet in game['bets'] %}
                 ({{ bet['AwayTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
                 {% endfor %}

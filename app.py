@@ -1,6 +1,11 @@
 from flask import Flask, render_template, redirect, url_for
+from database.models import Bets
+from pymongo import MongoClient
+import constants
+from teamMap import TEAM_MAP
 
 # TEMP DATABASE FOR TESTING
+'''
 Bets = [
     {
         "BetProvider": "DraftKings",
@@ -83,6 +88,12 @@ Bets = [
         },
     },
 ]
+'''
+
+client = MongoClient(constants.MONGO_URI)
+db = client.betterPicks
+
+
 
 app = Flask(__name__)
 
@@ -94,21 +105,62 @@ def index():
 def moneyline():
     active_view = 'Moneyline'
     game_bets = {}
-    for bet in Bets:
-        game_key = (bet['HomeTeam'], bet['AwayTeam'])
+    for doc in db.bets.find():
+        if doc['HomeTeam'] in TEAM_MAP:
+            hometeam = TEAM_MAP[doc['HomeTeam']]
+        else:
+            hometeam = doc['HomeTeam']
+        if doc['AwayTeam'] in TEAM_MAP:
+            awayteam = TEAM_MAP[doc['AwayTeam']]
+        else:
+            awayteam = doc['AwayTeam']
+        game_key = (hometeam, awayteam)
         if game_key not in game_bets:
-            game_bets[game_key] = {'HomeTeam': bet['HomeTeam'], 'AwayTeam': bet['AwayTeam'], 'bets': []}
+            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
         game_bets[game_key]['bets'].append({
-            'BetProvider': bet['BetProvider'],
-            'HomeTeamBet': bet['Bets']['Moneyline'][0],
-            'AwayTeamBet': bet['Bets']['Moneyline'][1]
+            'BetProvider': doc['BetProvider'],
+            'HomeTeamBet': doc['Bets']['Moneyline'][0],
+            'AwayTeamBet': doc['Bets']['Moneyline'][1]
         })
+    
     return render_template('moneyline.html', box_items=game_bets.values(), active_view=active_view)
 
 @app.route('/spread', methods=['GET', 'POST'])
 def spread():
     active_view = 'Spread'
     game_bets = {}
+    for doc in db.bets.find():
+        if doc['HomeTeam'] in TEAM_MAP:
+            hometeam = TEAM_MAP[doc['HomeTeam']]
+        else:
+            hometeam = doc['HomeTeam']
+        if doc['AwayTeam'] in TEAM_MAP:
+            awayteam = TEAM_MAP[doc['AwayTeam']]
+        else:
+            awayteam = doc['AwayTeam']
+        game_key = (hometeam, awayteam)
+        if game_key not in game_bets:
+            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
+        bet = {'BetProvider': doc['BetProvider']}
+
+        current_team = doc['Bets']['Spread'][0]['Team']
+        if current_team not in TEAM_MAP:
+            if current_team == hometeam:
+                bet['HomeTeamBet'] = doc['Bets']['Spread'][0]
+                bet['AwayTeamBet'] = doc['Bets']['Spread'][1]
+            else:
+                bet['HomeTeamBet'] = doc['Bets']['Spread'][1]
+                bet['AwayTeamBet'] = doc['Bets']['Spread'][0]
+        else: 
+            if TEAM_MAP[current_team] == hometeam:
+                bet['HomeTeamBet'] = doc['Bets']['Spread'][0]
+                bet['AwayTeamBet'] = doc['Bets']['Spread'][1]
+            else:
+                bet['HomeTeamBet'] = doc['Bets']['Spread'][1]
+                bet['AwayTeamBet'] = doc['Bets']['Spread'][0]
+
+        game_bets[game_key]['bets'].append(bet)
+    '''
     for bet in Bets:
         game_key = (bet['HomeTeam'], bet['AwayTeam'])
         if game_key not in game_bets:
@@ -118,12 +170,31 @@ def spread():
             'HomeTeamBet': bet['Bets']['Spread'][0],
             'AwayTeamBet': bet['Bets']['Spread'][1]
         })
+    '''
     return render_template('spread.html', box_items=game_bets.values(), active_view=active_view)
 
 @app.route('/total', methods=['GET', 'POST'])
 def total():
     active_view = 'Total'
     game_bets = {}
+    for doc in db.bets.find():
+        if doc['HomeTeam'] in TEAM_MAP:
+            hometeam = TEAM_MAP[doc['HomeTeam']]
+        else:
+            hometeam = doc['HomeTeam']
+        if doc['AwayTeam'] in TEAM_MAP:
+            awayteam = TEAM_MAP[doc['AwayTeam']]
+        else:
+            awayteam = doc['AwayTeam']
+        game_key = (hometeam, awayteam)
+        if game_key not in game_bets:
+            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
+        game_bets[game_key]['bets'].append({
+            'BetProvider': doc['BetProvider'],
+            'HomeTeamBet': doc['Bets']['Total'][0],
+            'AwayTeamBet': doc['Bets']['Total'][1]
+        })
+    '''
     for bet in Bets:
         game_key = (bet['HomeTeam'], bet['AwayTeam'])
         if game_key not in game_bets:
@@ -133,6 +204,7 @@ def total():
             'HomeTeamBet': bet['Bets']['Total'][0],
             'AwayTeamBet': bet['Bets']['Total'][1]
         })
+    '''
     return render_template('total.html', box_items=game_bets.values(), active_view=active_view)
 
 if __name__ == '__main__':

@@ -20,17 +20,16 @@ def extract_bets(data, bet_types):
                     if isinstance(offer, dict) and 'eventId' in offer and 'label' in offer:
                         # Get the matchup for the current event
                         eventId = offer['eventId']
-
                         if offer['label'] in bet_types or offer['label'] == 'Total':
                             for outcome in offer['outcomes']:
-                                current_team = outcome['participant']
+                                current_team = outcome.get('participant', outcome.get('label', 'Unknown'))
                                 # Determine if the bet is a team bet or an over/under bet
                                 if offer['label'] == 'Total':
                                     # For Over/Under bets, use the label (Over/Under) as the team
                                     team = outcome['label']
                                 else:
                                     # For other bets, use the participant as the team
-                                    team = outcome['participant']
+                                    team = outcome.get('participant', 'Unknown')
 
                                 bets.append({
                                     'event': event_group['eventGroupName'],
@@ -38,7 +37,7 @@ def extract_bets(data, bet_types):
                                     'type': offer['label'],
                                     'team': team,
                                     'line': outcome.get('line', 'N/A'),
-                                    'odds': outcome['oddsAmerican'],
+                                    'odds': outcome.get('oddsAmerican', 'N/A'),
                                 })
 
 
@@ -55,8 +54,8 @@ def organize_betting_data_ordered(bets, event_start_dates):
                 # Start a new game when no current game or both Spread bets have been added
                 current_game = {
                     'BetProvider': 'DraftKings',
-                    'home_team': bet['team'],  # First spread bet is the home team
-                    'away_team': '',  # Placeholder for away team
+                    'home_team': '',  # First spread bet is the away team
+                    'away_team': bet['team'],  # Placeholder for home team
                     'GameTime': game_start_date,
                     'bets': {
                         'Spread': [bet],  # Add the first spread bet
@@ -67,13 +66,12 @@ def organize_betting_data_ordered(bets, event_start_dates):
                 organized_games.append(current_game)
             else:
                 # Second spread bet is the away team for the current game
-                current_game['away_team'] = bet['team']
+                current_game['home_team'] = bet['team']
                 current_game['bets']['Spread'].append(bet)
         elif bet['type'] == 'Total' and current_game is not None:
             # Add total bet to the current game
             current_game['bets']['Total'].append(bet)
         elif bet['type'] == 'Moneyline' and current_game is not None:
-            # Add moneyline bet to the current game
             current_game['bets']['Moneyline'].append(bet)
 
     return organized_games
@@ -81,28 +79,4 @@ def organize_betting_data_ordered(bets, event_start_dates):
 
 
 
-''' FOR TESTING ALONE
-if __name__ == '__main__':
-    url = 'https://sportsbook.draftkings.com/sites/US-SB/api/v4/featured/displaygroup/2/subcategories/4511/eventgroup/42648/gamelines?format=json'
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        #print(data)
-
-    else:
-        print(f"Failed to retrieve data: {response.status_code}")
-
-    bet_types = ['Moneyline', 'Spread']
-    extracted_bets = extract_bets(data, bet_types)
-    event_start_dates = {}
-    for subcategory in data['featuredDisplayGroup']['featuredSubcategories']:
-        for event in subcategory.get('events', []): 
-            event_start_dates[event['eventId']] = event['startDate']
-    res = organize_betting_data_ordered(extracted_bets, event_start_dates)
-    for game in res:
-        for bet_type, bets in game['bets'].items():
-            for bet in bets:
-                bet.pop('eventId', None)
-'''
