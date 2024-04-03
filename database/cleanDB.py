@@ -1,7 +1,7 @@
 from datetime import datetime
 from database.models import Bets
 from mongoengine import connect
-import ./constants
+import constants
 
 
 def clean_past_bets():

@@ -315,8 +315,16 @@ def load_caesars_bets() -> None:
             print(bet.HomeTeam, bet.AwayTeam, bet.GameTime)
 
 
+def load_bets():
+    clean_past_bets()
+    load_mgm_bets()
+    load_dk_bets()
+    load_pb_bets()
+    #load_caesars_bets()
 
-load_mgm_bets()
-load_dk_bets()
-load_pb_bets()
+
+
+#load_mgm_bets()
+#load_dk_bets()
+#load_pb_bets()
 #load_caesars_bets()

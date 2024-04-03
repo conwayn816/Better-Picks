@@ -74,6 +74,11 @@
     </form>
 </div>
 
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+<button id="refreshButton" onClick="refreshDatabase()" >Refresh Data</button>
+
+
+
 <div class="container">
     {% for game in box_items %}
     <div class="box">
@@ -100,6 +105,8 @@
     </div>
     {% endfor %}
 </div>
+
+
 
 </body>
 </html>

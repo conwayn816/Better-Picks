@@ -3,6 +3,7 @@ from database.models import Bets
 from pymongo import MongoClient
 import constants
 from teamMap import TEAM_MAP
+from loader import load_bets
 
 # TEMP DATABASE FOR TESTING
 '''
@@ -100,6 +101,14 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return redirect(url_for('moneyline'))
+
+@app.route('/refresh', methods=['POST'])
+def refresh():
+    load_bets()
+    return '', 200
+
+
+
 
 @app.route('/moneyline', methods=['GET', 'POST'])
 def moneyline():
@@ -208,4 +217,5 @@ def total():
     return render_template('total.html', box_items=game_bets.values(), active_view=active_view)
 
 if __name__ == '__main__':
+    load_bets()
     app.run(debug=True)
