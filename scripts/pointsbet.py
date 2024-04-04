@@ -50,6 +50,8 @@ def getBets(data):
                         # Check if the bet type is Moneyline
                         if types['eventName'] == "Moneyline":
                             team_name = event['homeTeam'] if outcomes['name'].startswith(event['homeTeam']) else event['awayTeam']
+                            if '-' not in odds:
+                                odds = "+" + odds 
                             bet_type_data.append({
                                 'event': "NBA",
                                 'type': types['eventName'],
@@ -76,24 +78,3 @@ def getBets(data):
                 'bets': bet_types
             })
     return bets
-
-if __name__ == "__main__":
-    url = "https://api.on.pointsbet.com/api/v2/competitions/105/events/featured?includeLive=false&page=1"
-    # Set the user-agent to avoid 403 Forbidden error
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-    }
-    
-    # Fetch data from the API and save it to a file
-    try:
-        # Fetch data from the API
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-
-    # Handle exceptions
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to fetch data: {e}")
-
-    # Get the bets
-    bets = getBets(data)
