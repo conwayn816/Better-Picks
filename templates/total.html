@@ -10,36 +10,18 @@
             margin: 50px auto;
             text-align: center;
         }
-        .box-title {
-            text-align: left;
-            margin-bottom: 10px;
-        }
-        .box {
-            display: inline-block;
-            width: calc(70% - 20px);
-            margin-right: 20px;
+        .search-container {
             margin-bottom: 20px;
-            background-color: #f0f0f0;
+            margin-left: 37%;
+        }
+        .search-container input[type=text] {
+            width: 40%;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
-        }
-        .box:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .odds-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            margin-right: 100px;
-        }
-        .line-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            margin-right: 100px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
         }
         .button-container {
             text-align: center;
@@ -64,10 +46,39 @@
         .active {
             opacity: 0.5;
         }
+        .box {
+            display: inline-block;
+            width: calc(70% - 20px);
+            margin-right: 20px;
+            margin-bottom: 20px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .box:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .odds-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-right: 100px;
+        }
     </style>
 </head>
 <body>
 
+<!-- Search bar -->
+<div class="search-container">
+    <form id="searchForm">
+        <input type="text" id="searchInput" placeholder="Search..." oninput="saveSearch()">
+    </form>
+</div>
+
+<!-- Buttons to switch between views -->
 <div class="button-container">
     <form action="/moneyline" method="post">
         <button name="view" value="Moneyline" {% if active_view == 'Moneyline' %}class="active"{% endif %}>MONEYLINE</button>
@@ -80,9 +91,18 @@
     </form>
 </div>
 
+<!-- Save user input from search bar -->
+<script>
+    function saveSearch() {
+        var searchInput = document.getElementById("searchInput").value;
+    }
+</script>
+
+<!-- Update data -->
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 <button id="refreshButton" onClick="refreshDatabase()" >Refresh Data</button>
 
+<!-- Display game data -->
 <div class="container">
     {% for game in box_items %}
     <div class="box">
