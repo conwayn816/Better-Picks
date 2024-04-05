@@ -153,6 +153,9 @@
         <div class="box-title">
             <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }} </h2>
         </div>
+        <div class="start-time">
+            <h3><p>Start Time: {{ game['GameTime'] }}</p></h3>
+        </div>
         <div class="provider-odds">
                 {% for bet in game['bets'] %}
                 {{ bet['BetProvider'] }}&nbsp;&nbsp;&nbsp;
