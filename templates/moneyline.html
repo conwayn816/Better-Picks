@@ -27,6 +27,34 @@
             border-radius: 4px;
             outline: none;
         }
+        .profile-button {
+            display: inline-block;
+            padding: 10px 20px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 2px solid #000; /* Black border */
+            cursor: pointer;
+            position: fixed; /* Fixed position */
+            top: 20px;
+            right: 20px;
+            margin-bottom: 20px;
+            background-color: #f4f6f8;
+        }
+        .friends-button {
+            display: inline-block;
+            padding: 10px 20px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 2px solid #000; /* Black border */
+            cursor: pointer;
+            position: fixed; /* Fixed position */
+            top: 70px;
+            right: 20px;
+            margin-bottom: 20px;
+            background-color: #f4f6f8;
+        }
         .button-container {
             text-align: center;
             margin-bottom: 20px;
@@ -75,6 +103,16 @@
 </head>
 <body>
 
+<!-- Profile button -->    
+<div class="profile-button">
+    <a href = "/profile.html">Profile</a>
+</div>
+
+<!-- Friends button -->
+<div class="friends-button">
+    <a href = "/friendslist.html">Friends</a>
+</div>
+    
 <!-- Search bar -->
 <div class="search-container">
     <form id="searchForm">
