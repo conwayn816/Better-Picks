@@ -5,6 +5,11 @@ import constants
 from teamMap import TEAM_MAP
 from loader import load_bets
 from datetime import datetime, timedelta
+import pytz
+
+# Create timezone objects for UTC and EST
+utc = pytz.timezone("UTC")
+est = pytz.timezone("US/Eastern")
 
 # TEMP DATABASE FOR TESTING
 '''
@@ -96,7 +101,6 @@ client = MongoClient(constants.MONGO_URI)
 db = client.betterPicks
 
 
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -107,8 +111,6 @@ def index():
 def refresh():
     load_bets()
     return '', 200
-
-
 
 
 @app.route('/moneyline', methods=['GET', 'POST'])
@@ -130,7 +132,8 @@ def moneyline():
         game_key = (hometeam, awayteam)
         if game_key not in game_bets:
             game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
-        game_time = doc['GameTime'].strftime('%I:%M %p CST')
+        # Convert the game_time from UTC to EST
+        game_time = doc["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST")
         game_bets[game_key]['GameTime'] = game_time
         game_bets[game_key]['bets'].append({
             'BetProvider': doc['BetProvider'],
