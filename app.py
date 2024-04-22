@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from database.models import Bets
 from pymongo import MongoClient
 import constants
@@ -143,6 +143,26 @@ def total():
         })
     '''
     return render_template('total.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
+
+@app.route('/search', methods=['POST'])
+def search():
+    search_input = request.json.get('searchInput', '')
+
+    # Get the JSON data displayed for the current day
+    start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = start_of_day + timedelta(days=1)
+    game_bets = db.bets.find({'GameTime': {'$gte': start_of_day, '$lt': end_of_day}})
+
+    # Perform the search based on the input query
+    filtered_game_data = []
+    for doc in game_bets:
+        if search_input.lower() in doc['HomeTeam'].lower() or search_input.lower() in doc['AwayTeam'].lower():
+            filtered_game_data.append(doc)
+
+    # Convert the filtered game data to a list of dictionaries
+    filtered_game_data_dicts = [game_data for game_data in filtered_game_data]
+
+    return jsonify(filtered_game_data_dicts)
 '''
 need to add uname settings function, pword settings function, friends function, and account history
 function once we have another mongo db collection setup that includes users/pwords, friends 
