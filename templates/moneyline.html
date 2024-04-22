@@ -169,6 +169,23 @@
     </div>
     {% endfor %}
 </div>
+<!-- JavaScript to handle the search functionality this could be removed something i tried to help it not move to another tab and stay on same page when doing search, still working on it-->
+<script>
+    function search() {
+        var searchInput = document.getElementById("searchInput").value;
 
+        // Send an AJAX request to the server with the search query
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/search", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Update the game data container with the filtered results
+                document.getElementById("gameDataContainer").innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send(JSON.stringify({searchInput: searchInput}));
+    }
+</script>
 </body>
 </html>
