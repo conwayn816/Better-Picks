@@ -163,11 +163,7 @@ def search():
     filtered_game_data_dicts = [game_data for game_data in filtered_game_data]
 
     return jsonify(filtered_game_data_dicts)
-'''
-need to add uname settings function, pword settings function, friends function, and account history
-function once we have another mongo db collection setup that includes users/pwords, friends 
-associated w/ users, and account wins/losses
-'''
+
 if __name__ == '__main__':
     load_bets()
     app.run(debug=True)
