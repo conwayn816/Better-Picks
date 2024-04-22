@@ -94,17 +94,6 @@ def spread():
                 bet['AwayTeamBet'] = doc['Bets']['Spread'][0]
 
         game_bets[game_key]['bets'].append(bet)
-    '''
-    for bet in Bets:
-        game_key = (bet['HomeTeam'], bet['AwayTeam'])
-        if game_key not in game_bets:
-            game_bets[game_key] = {'HomeTeam': bet['HomeTeam'], 'AwayTeam': bet['AwayTeam'], 'bets': []}
-        game_bets[game_key]['bets'].append({
-            'BetProvider': bet['BetProvider'],
-            'HomeTeamBet': bet['Bets']['Spread'][0],
-            'AwayTeamBet': bet['Bets']['Spread'][1]
-        })
-    '''
     return render_template('spread.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
 
 @app.route('/total', methods=['GET', 'POST'])
@@ -131,17 +120,6 @@ def total():
             'HomeTeamBet': doc['Bets']['Total'][0],
             'AwayTeamBet': doc['Bets']['Total'][1]
         })
-    '''
-    for bet in Bets:
-        game_key = (bet['HomeTeam'], bet['AwayTeam'])
-        if game_key not in game_bets:
-            game_bets[game_key] = {'HomeTeam': bet['HomeTeam'], 'AwayTeam': bet['AwayTeam'], 'bets': []}
-        game_bets[game_key]['bets'].append({
-            'BetProvider': bet['BetProvider'],
-            'HomeTeamBet': bet['Bets']['Total'][0],
-            'AwayTeamBet': bet['Bets']['Total'][1]
-        })
-    '''
     return render_template('total.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
 
 @app.route('/search', methods=['POST'])
