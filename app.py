@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from database.models import Bets
-from pymongo import MongoClient
+import mongoengine
 import constants
 from teamMap import TEAM_MAP
 from loader import load_bets
@@ -10,8 +10,7 @@ import pytz
 # Create timezone objects for UTC and EST
 utc = pytz.timezone("UTC")
 est = pytz.timezone("US/Eastern")
-client = MongoClient(constants.MONGO_URI)
-db = client.betterPicks
+db = mongoengine.connect(db="betterPicks", host=constants.MONGO_URI)
 
 
 app = Flask(__name__)
@@ -33,27 +32,46 @@ def moneyline():
     start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = start_of_day + timedelta(days=1)
     game_bets = {}
-    for doc in db.bets.find({'GameTime': {'$gte': start_of_day, '$lt': end_of_day}}):
-        if doc['HomeTeam'] in TEAM_MAP:
-            hometeam = TEAM_MAP[doc['HomeTeam']]
+    for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):
+        if bet["HomeTeam"] in TEAM_MAP:
+            hometeam = TEAM_MAP[bet["HomeTeam"]]
         else:
-            hometeam = doc['HomeTeam']
-        if doc['AwayTeam'] in TEAM_MAP:
-            awayteam = TEAM_MAP[doc['AwayTeam']]
+            hometeam = bet["HomeTeam"]
+        if bet["AwayTeam"] in TEAM_MAP:
+            awayteam = TEAM_MAP[bet["AwayTeam"]]
         else:
-            awayteam = doc['AwayTeam']
+            awayteam = bet["AwayTeam"]
         game_key = (hometeam, awayteam)
         if game_key not in game_bets:
-            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
+            game_bets[game_key] = {
+                "HomeTeam": hometeam,
+                "AwayTeam": awayteam,
+                "bets": [],
+            }
         # Convert the game_time from UTC to EST
-        game_time = doc["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST")
-        game_bets[game_key]['GameTime'] = game_time
-        game_bets[game_key]['bets'].append({
-            'BetProvider': doc['BetProvider'],
-            'HomeTeamBet': doc['Bets']['Moneyline'][0],
-            'AwayTeamBet': doc['Bets']['Moneyline'][1]
-        })
-    
+        game_time = (
+            bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST")
+        )
+        game_bets[game_key]["GameTime"] = game_time
+        if bet["BetProvider"] == "BetMGM" or bet["BetProvider"] == "DraftKings":
+            game_bets[game_key]["bets"].append(
+                {
+                    "BetProvider": bet["BetProvider"],
+                    "HomeTeamBet": bet["Bets"]["Moneyline"][1],
+                    "AwayTeamBet": bet["Bets"]["Moneyline"][0],
+                    "BetType": "Moneyline",
+                }
+            )
+        else:
+            game_bets[game_key]["bets"].append(
+                {
+                    "BetProvider": bet["BetProvider"],
+                    "HomeTeamBet": bet["Bets"]["Moneyline"][0],
+                    "AwayTeamBet": bet["Bets"]["Moneyline"][1],
+                    "BetType": "Moneyline",
+                }
+            )
+
     return render_template('moneyline.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
 
 @app.route('/spread', methods=['GET', 'POST'])
@@ -63,37 +81,51 @@ def spread():
     start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = start_of_day + timedelta(days=1)
     game_bets = {}
-    for doc in db.bets.find({'GameTime': {'$gte': start_of_day, '$lt': end_of_day}}):
-        if doc['HomeTeam'] in TEAM_MAP:
-            hometeam = TEAM_MAP[doc['HomeTeam']]
+    for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):   
+        if bet["HomeTeam"] in TEAM_MAP:
+            hometeam = TEAM_MAP[bet["HomeTeam"]]
         else:
-            hometeam = doc['HomeTeam']
-        if doc['AwayTeam'] in TEAM_MAP:
-            awayteam = TEAM_MAP[doc['AwayTeam']]
+            hometeam = bet["HomeTeam"]
+        if bet["AwayTeam"] in TEAM_MAP:
+            awayteam = TEAM_MAP[bet["AwayTeam"]]
         else:
-            awayteam = doc['AwayTeam']
+            awayteam = bet["AwayTeam"]
         game_key = (hometeam, awayteam)
         if game_key not in game_bets:
-            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
-        bet = {'BetProvider': doc['BetProvider']}
-
-        current_team = doc['Bets']['Spread'][0]['Team']
-        if current_team not in TEAM_MAP:
-            if current_team == hometeam:
-                bet['HomeTeamBet'] = doc['Bets']['Spread'][0]
-                bet['AwayTeamBet'] = doc['Bets']['Spread'][1]
+            game_bets[game_key] = {
+                "HomeTeam": hometeam,
+                "AwayTeam": awayteam,
+                "bets": [],
+            }
+        bet_data = {"BetProvider": bet["BetProvider"]}
+        if "Bets" in bet and "Spread" in bet["Bets"] and len(bet["Bets"]["Spread"]) > 0:
+            current_team = bet["Bets"]["Spread"][0]["Team"]
+            # Convert the game_time from UTC to EST
+            game_time = (bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST"
+            ))
+            game_bets[game_key]["GameTime"] = game_time
+            if current_team not in TEAM_MAP:
+                if current_team == hometeam:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][0]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][1]
+                else:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][1]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][0]
             else:
-                bet['HomeTeamBet'] = doc['Bets']['Spread'][1]
-                bet['AwayTeamBet'] = doc['Bets']['Spread'][0]
-        else: 
-            if TEAM_MAP[current_team] == hometeam:
-                bet['HomeTeamBet'] = doc['Bets']['Spread'][0]
-                bet['AwayTeamBet'] = doc['Bets']['Spread'][1]
-            else:
-                bet['HomeTeamBet'] = doc['Bets']['Spread'][1]
-                bet['AwayTeamBet'] = doc['Bets']['Spread'][0]
+                if TEAM_MAP[current_team] == hometeam:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][0]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][1]
+                else:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][1]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][0]
+        else:
+            bet_data["HomeTeamBet"] = {"Team": hometeam, "Line": 0, "Odds": 0}
+            bet_data["AwayTeamBet"] = {"Team": awayteam, "Line": 0, "Odds": 0}
+        
+        bet_data["BetType"] = "Spread"
 
-        game_bets[game_key]['bets'].append(bet)
+        game_bets[game_key]["bets"].append(bet_data)
+
     return render_template('spread.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
 
 @app.route('/total', methods=['GET', 'POST'])
@@ -103,22 +135,23 @@ def total():
     start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = start_of_day + timedelta(days=1)
     game_bets = {}
-    for doc in db.bets.find({'GameTime': {'$gte': start_of_day, '$lt': end_of_day}}):
-        if doc['HomeTeam'] in TEAM_MAP:
-            hometeam = TEAM_MAP[doc['HomeTeam']]
+    for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):
+        if bet['HomeTeam'] in TEAM_MAP:
+            hometeam = TEAM_MAP[bet['HomeTeam']]
         else:
-            hometeam = doc['HomeTeam']
-        if doc['AwayTeam'] in TEAM_MAP:
-            awayteam = TEAM_MAP[doc['AwayTeam']]
+            hometeam = bet['HomeTeam']
+        if bet['AwayTeam'] in TEAM_MAP:
+            awayteam = TEAM_MAP[bet['AwayTeam']]
         else:
-            awayteam = doc['AwayTeam']
+            awayteam = bet['AwayTeam']
         game_key = (hometeam, awayteam)
         if game_key not in game_bets:
-            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'bets': []}
+            game_bets[game_key] = {'HomeTeam': hometeam, 'AwayTeam': awayteam, 'GameTime': bet['GameTime'].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST"), 'bets': []}
         game_bets[game_key]['bets'].append({
-            'BetProvider': doc['BetProvider'],
-            'HomeTeamBet': doc['Bets']['Total'][0],
-            'AwayTeamBet': doc['Bets']['Total'][1]
+            'BetProvider': bet['BetProvider'],
+            'HomeTeamBet': bet['Bets']['Total'][0],
+            'AwayTeamBet': bet['Bets']['Total'][1],
+            'BetType': 'Total'
         })
     return render_template('total.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
 
