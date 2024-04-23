@@ -177,9 +177,63 @@ def search():
 
 @app.route('/record', methods=['GET', 'POST'])
 def record():
+    if request.method == "POST":
+        team = request.form.get("team")
+        team = TEAM_MAP[team]
+    game_bets = {}    
+    game_bets_filtered = {}
 
-    return render_template("record.html", team=team)
+    for bet in Bets.objects():   
+        if bet["HomeTeam"] in TEAM_MAP:
+            hometeam = TEAM_MAP[bet["HomeTeam"]]
+        else:
+            hometeam = bet["HomeTeam"]
+        if bet["AwayTeam"] in TEAM_MAP:
+            awayteam = TEAM_MAP[bet["AwayTeam"]]
+        else:
+            awayteam = bet["AwayTeam"]
+        game_key = (hometeam, awayteam)
+        if game_key not in game_bets:
+            game_bets[game_key] = {
+                "HomeTeam": hometeam,
+                "AwayTeam": awayteam,
+                "bets": [],
+            }
+        bet_data = {"BetProvider": bet["BetProvider"]}
+        if "Bets" in bet and "Spread" in bet["Bets"] and len(bet["Bets"]["Spread"]) > 0:
+            current_team = bet["Bets"]["Spread"][0]["Team"]
+            # Convert the game_time from UTC to EST
+            game_time = (bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%m/%d/%Y at %I:%M %p EST"
+            ))
+            game_bets[game_key]["GameTime"] = game_time
+            if current_team not in TEAM_MAP:
+                if current_team == hometeam:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][0]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][1]
+                else:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][1]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][0]
+            else:
+                if TEAM_MAP[current_team] == hometeam:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][0]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][1]
+                else:
+                    bet_data["HomeTeamBet"] = bet["Bets"]["Spread"][1]
+                    bet_data["AwayTeamBet"] = bet["Bets"]["Spread"][0]
+        else:
+            bet_data["HomeTeamBet"] = {"Team": hometeam, "Line": 0, "Odds": 0}
+            bet_data["AwayTeamBet"] = {"Team": awayteam, "Line": 0, "Odds": 0}
+        
+        bet_data["BetType"] = "Spread"
 
+        game_bets[game_key]["bets"].append(bet_data)
+
+    for game_key, game_data in game_bets.items():
+        if game_data["HomeTeam"] == team or game_data["AwayTeam"] == team:
+            game_bets_filtered[game_key] = game_data
+
+    return render_template("record.html", team=team, box_items=game_bets_filtered.values())
+    
 
 if __name__ == '__main__':
     load_bets()

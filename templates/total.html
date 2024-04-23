@@ -71,6 +71,21 @@
             margin-top: 10px;
             margin-right: 100px;
         }
+        .small-button {
+            position: fixed;
+            top: 130px;
+            left: 85%; /* Set left position to 50% */
+            transform: translateX(-50%);
+            display: block;
+            margin-bottom: 10px;
+        }
+        .db {
+            position: fixed;
+            top: 70px;
+            left: 85%; /* Set left position to 50% */
+            transform: translateX(-50%);
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -162,5 +177,46 @@
         xhr.send(JSON.stringify({searchInput: searchInput}));
     }
 </script>
+
+<div class="db">
+    <strong>Upcoming games For All Teams:</strong>
+</div>
+<!--All Buttons-->
+<div class="small-button">
+    <form action="/record" method="post">
+        <button name="team" value="Hawks">Hawks</button>
+        <button name="team" value="Celtics">Celtics</button><br><br>
+        <button name="team" value="Hornets">Hornets</button>
+        <button name="team" value="Bulls">Bulls</button><br><br>
+        <button name="team" value="Cavaliers">Cavaliers</button>
+        <button name="team" value="Mavericks">Mavericks</button><br><br>
+        <button name="team" value="Nuggets">Nuggets</button>
+        <button name="team" value="Pistons">Pistons</button><br><br>
+        <button name="team" value="Warriors">Warriors</button>
+        <button name="team" value="Rockets">Rockets</button><br><br>
+        <button name="team" value="Pacers">Pacers</button>
+        <button name="team" value="Clippers">Clippers</button><br><br>
+        <button name="team" value="Lakers">Lakers</button>
+        <button name="team" value="Grizzlies">Grizzlies</button><br><br>
+        <button name="team" value="Heat">Heat</button>
+        <button name="team" value="Bucks">Bucks</button><br><br>
+        <button name="team" value="Timberwolves">Timberwolves</button>
+        <button name="team" value="Pelicans">Pelicans</button><br><br>
+        <button name="team" value="Knicks">Knicks</button>
+        <button name="team" value="Thunder">Thunder</button><br><br>
+        <button name="team" value="Magic">Magic</button>
+        <button name="team" value="76ers">76ers</button><br><br>
+        <button name="team" value="Suns">Suns</button>
+        <button name="team" value="TrailBlazers">TrailBlazers</button><br><br>
+        <button name="team" value="Kings">Kings</button>
+        <button name="team" value="Spurs">Spurs</button><br><br>
+        <button name="team" value="Raptors">Raptors</button>
+        <button name="team" value="Jazz">Jazz</button><br><br>
+        <button name="team" value="Wizards">Wizards</button>
+        <button name="team" value="Nets">Nets</button>
+        
+    </form>
+</div>
+
 </body>
 </html>
