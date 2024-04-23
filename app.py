@@ -175,6 +175,12 @@ def search():
 
     return jsonify(filtered_game_data_dicts)
 
+@app.route('/record', methods=['GET', 'POST'])
+def record():
+
+    return render_template("record.html", team=team)
+
+
 if __name__ == '__main__':
     load_bets()
     app.run(debug=True)
