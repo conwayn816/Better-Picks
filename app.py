@@ -258,7 +258,7 @@ def record():
         if "Bets" in bet and "Spread" in bet["Bets"] and len(bet["Bets"]["Spread"]) > 0:
             current_team = bet["Bets"]["Spread"][0]["Team"]
             # Convert the game_time from UTC to EST
-            game_time = (bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST"
+            game_time = (bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%m/%d/%Y at %I:%M %p EST"
             ))
             game_bets_tot[game_key]["GameTime"] = game_time
             if current_team not in TEAM_MAP:
@@ -309,7 +309,7 @@ def record():
         if "Bets" in bet and "Spread" in bet["Bets"] and len(bet["Bets"]["Spread"]) > 0:
             current_team = bet["Bets"]["Spread"][0]["Team"]
             # Convert the game_time from UTC to EST
-            game_time = (bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST"
+            game_time = (bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%m/%d/%Y at %I:%M %p EST"
             ))
             game_bets_spread[game_key]["GameTime"] = game_time
             if current_team not in TEAM_MAP:
