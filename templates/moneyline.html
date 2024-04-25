@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <style>
+        body {
+            background-color: #282B35;
+        }
         .container {
             width: 80%; 
             margin: 50px auto;
@@ -14,46 +17,27 @@
             text-align: left;
             margin-bottom: 10px;
         }
-        .search-container {
+        .box {
+            display: inline-block;
+            width: calc(70% - 20px);
+            margin-right: 20px;
             margin-bottom: 20px;
-            margin-left: 37%;
-        }
-        .search-container input[type=text] {
-            width: 40%;
+            background-color: #D1D1D1;
             padding: 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            outline: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            border-radius: 10px;
         }
-        .profile-button {
-            display: inline-block;
-            padding: 10px 20px;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 2px solid #000; /* Black border */
-            cursor: pointer;
-            position: fixed; /* Fixed position */
-            top: 20px;
-            right: 20px;
-            margin-bottom: 20px;
-            background-color: #f4f6f8;
+        .box:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .friends-button {
-            display: inline-block;
-            padding: 10px 20px;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 2px solid #000; /* Black border */
-            cursor: pointer;
-            position: fixed; /* Fixed position */
-            top: 70px;
-            right: 20px;
-            margin-bottom: 20px;
-            background-color: #f4f6f8;
+        .odds-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-right: 100px;
         }
         .button-container {
             text-align: center;
@@ -65,60 +49,77 @@
             margin: 0 10px;
         }
         .button-container button {
+            background-color: #D1D1D1;
             padding: 5px 10px;
             font-size: 16px;
             cursor: pointer;
+            border-radius: 10px;
         }
         .provider-odds {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
-            margin-left: 100px;
         }
-        .active {
-            opacity: 0.5;
+        .provider {
+            flex: 1;
+            text-align: left;
         }
-        .box {
-            display: inline-block;
-            width: calc(70% - 20px);
-            margin-right: 20px;
-            margin-bottom: 20px;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
+        .odds {
+            flex: 1;
+            text-align: right;
+            margin: 10px;
+            margin-top: 5px;
         }
-        .box:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        .title-container {
+            position: absolute;
+            left: 20px;
+            font-family: sans-serif;
+            color: #ffffff;
         }
-        .odds-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            margin-right: 100px;
+        .cool-font {
+            font-size: 42px;
         }
         .small-button {
             position: fixed;
             top: 100px;
-            left: 85%; /* Set left position to 50% */
+            left: 85%;
             transform: translateX(-50%);
             display: block;
             margin-bottom: 10px;
         }
         .db {
-            position: fixed;
-            top: 70px;
-            left: 85%; /* Set left position to 50% */
-            transform: translateX(-50%);
-            display: inline-block;
+            top: 20px;
+            left: 85%;
+            color: white;
+        }
+        .cd {
+            top: 20px;
+            left: 85%;
+            color: white;
+        }
+        .active {
+            opacity: 0.5;
+        }
+        .search-container {
+            position: relative;
+            top: 50px;
+            margin-bottom: 60px;
+            margin-left: 37%;
+        }
+        .search-container input[type=text] {
+            width: 40%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
         }
     </style>
 </head>
 <body>
-    
-<!-- Search bar -->
+
+<!-- Search Bar -->
 <div class="search-container">
     <form id="searchForm">
         <input type="text" id="searchInput" placeholder="Search..." oninput="saveSearch()">
@@ -139,16 +140,9 @@
 </div>
 
 <!-- Current date -->
-<div>
+<div class="cd">
     <p>Current Date: {{ current_date }}</p>
 </div>
-
-<!-- Save user input from search bar -->
-<script>
-    function saveSearch() {
-        var searchInput = document.getElementById("searchInput").value;
-    }
-</script>
 
 <!-- Update data -->
 <script src="{{ url_for('static', filename='main.js') }}"></script>
@@ -159,56 +153,28 @@
     {% for game in box_items %}
     <div class="box">
         <div class="box-title">
-            <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }} </h2>
-        </div>
-        <div class="start-time">
-            <h3><p>Start Time: {{ game['GameTime'] }}</p></h3>
-        </div>
-        <div class="provider-odds">
-                {% for bet in game['bets'] %}
-                {{ bet['BetProvider'] }}&nbsp;&nbsp;&nbsp;
-                {% endfor %}
+            <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
+            <p><strong>Start Time: {{game['GameTime']}}</strong></p>
         </div>
         <div class="odds-container">
-            <p><strong>{{ game['HomeTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['HomeTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
-        <div class="odds-container">
-            <p><strong>{{ game['AwayTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['AwayTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
+            {% for bet in game['bets'] %}
+            <div class="provider-odds">
+                <div class="provider">{{ bet['BetProvider'] }}</div><br> 
+                <strong>{{game['HomeTeam']}}: </strong>({{ bet['HomeTeamBet']['Odds']}})
+                <strong>{{game['AwayTeam']}}: </strong>({{bet['AwayTeamBet']['Odds']}})
+            </div>
+            {% endfor %}
         </div>
     </div>
     {% endfor %}
 </div>
-<!-- JavaScript to handle the search functionality this could be removed something i tried to help it not move to another tab and stay on same page when doing search, still working on it-->
-<script>
-    function search() {
-        var searchInput = document.getElementById("searchInput").value;
 
-        // Send an AJAX request to the server with the search query
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/search", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Update the game data container with the filtered results
-                document.getElementById("gameDataContainer").innerHTML = xhr.responseText;
-            }
-        };
-        xhr.send(JSON.stringify({searchInput: searchInput}));
-    }
-</script>
-
-
-<div class="db">
-    <strong>Upcoming Bets For All Teams:</strong>
-</div>
 <!--All Buttons-->
 <div class="small-button">
+    <div class="db">
+    <strong>Upcoming Bets For All Teams:</strong>
+    </div>
+    <br>
     <form action="/record" method="post">
         <button name="team" value="Hawks">Hawks</button>
         <button name="team" value="Celtics">Celtics</button><br><br>
