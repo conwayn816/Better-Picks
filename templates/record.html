@@ -115,6 +115,7 @@
     {% for game in moneyline %}
     <div class="box">
         <div class="box-title">
+            <h2>MONEYLINE</h2>
             <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
             <p><strong>Start Time: {{game['GameTime']}}</strong></p>
         </div>
@@ -145,6 +146,7 @@
     {% for game in spread %}
     <div class="box">
         <div class="box-title">
+            <h2>SPREAD</h2>
             <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
             <p><strong>Start Time: {{game['GameTime']}}</strong></p>
         </div>
@@ -174,6 +176,7 @@
     {% for game in total %}
     <div class="box">
         <div class="box-title">
+            <h2>TOTAL</h2>
             <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
             <p><strong>Start Time: {{game['GameTime']}}</strong></p>
         </div>
