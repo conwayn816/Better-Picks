@@ -255,7 +255,7 @@ def load_pb_bets() -> None:
         print(game.Bets)"""
 
 def load_bets():
-    #clean_past_bets()
+    clean_past_bets()
     load_mgm_bets()
     load_dk_bets()
     load_pb_bets()

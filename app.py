@@ -25,14 +25,14 @@ def refresh():
     return '', 200
 
 
-@app.route('/moneyline', methods=['GET', 'POST'])
+@app.route("/moneyline", methods=["GET", "POST"])
 def moneyline():
-    active_view = 'Moneyline'
-    current_date = datetime.now().strftime('%Y-%m-%d')
+    active_view = "Moneyline"
+    current_date = datetime.now().strftime("%Y-%m-%d")
     start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = start_of_day + timedelta(days=1)
+    end_of_day = start_of_day + timedelta(days=1.5)
     game_bets = {}
-    for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):
+    for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):        
         if bet["HomeTeam"] in TEAM_MAP:
             hometeam = TEAM_MAP[bet["HomeTeam"]]
         else:
@@ -53,33 +53,33 @@ def moneyline():
             bet["GameTime"].replace(tzinfo=utc).astimezone(est).strftime("%I:%M %p EST")
         )
         game_bets[game_key]["GameTime"] = game_time
-        if bet["BetProvider"] == "BetMGM" or bet["BetProvider"] == "DraftKings":
-            game_bets[game_key]["bets"].append(
-                {
-                    "BetProvider": bet["BetProvider"],
-                    "HomeTeamBet": bet["Bets"]["Moneyline"][1],
-                    "AwayTeamBet": bet["Bets"]["Moneyline"][0],
-                    "BetType": "Moneyline",
-                }
-            )
-        else:
-            game_bets[game_key]["bets"].append(
-                {
-                    "BetProvider": bet["BetProvider"],
-                    "HomeTeamBet": bet["Bets"]["Moneyline"][0],
-                    "AwayTeamBet": bet["Bets"]["Moneyline"][1],
-                    "BetType": "Moneyline",
-                }
-            )
 
-    return render_template('moneyline.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
+        if bet["BetProvider"] == "BetMGM":
+            if bet["Bets"]["Moneyline"][0]["Odds"] > 0:
+                bet["Bets"]["Moneyline"][0]["Odds"] = "+" + str(
+                    bet["Bets"]["Moneyline"][0]["Odds"]
+                )
 
-@app.route('/spread', methods=['GET', 'POST'])
+        game_bets[game_key]["bets"].append(
+            {
+                "BetProvider": bet["BetProvider"],
+                "HomeTeamBet": bet["Bets"]["Moneyline"][0],
+                "AwayTeamBet": bet["Bets"]["Moneyline"][1],
+                "BetType": "Moneyline"
+            }
+        )
+
+    # Sort game_bets by the start time of each game
+    sorted_game_bets = sorted(game_bets.values(), key=lambda x: datetime.strptime(x["GameTime"], "%I:%M %p EST"))
+
+    return render_template("moneyline.html", box_items=sorted_game_bets, active_view=active_view, current_date = start_of_day.replace(tzinfo=utc).astimezone(est).strftime("%Y-%m-%d"))
+
+@app.route("/spread", methods=["GET", "POST"])
 def spread():
-    active_view = 'Spread'
-    current_date = datetime.now().strftime('%Y-%m-%d')
+    active_view = "Spread"
+    current_date = datetime.now().strftime("%Y-%m-%d")
     start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = start_of_day + timedelta(days=1)
+    end_of_day = start_of_day + timedelta(days=1.5)
     game_bets = {}
     for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):   
         if bet["HomeTeam"] in TEAM_MAP:
@@ -126,14 +126,16 @@ def spread():
 
         game_bets[game_key]["bets"].append(bet_data)
 
-    return render_template('spread.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
+        # Sort game_bets by the start time of each game
+    sorted_game_bets = sorted(game_bets.values(), key=lambda x: datetime.strptime(x["GameTime"], "%I:%M %p EST"))
+    return render_template("spread.html", box_items=sorted_game_bets, active_view=active_view, current_date = start_of_day.replace(tzinfo=utc).astimezone(est).strftime("%Y-%m-%d"))
 
-@app.route('/total', methods=['GET', 'POST'])
+@app.route("/total", methods=["GET", "POST"])
 def total():
-    active_view = 'Total'
+    active_view = "Total"
     current_date = datetime.now().strftime('%Y-%m-%d')
     start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = start_of_day + timedelta(days=1)
+    end_of_day = start_of_day + timedelta(days=1.5)
     game_bets = {}
     for bet in Bets.objects(GameTime__gte=start_of_day, GameTime__lt=end_of_day):
         if bet['HomeTeam'] in TEAM_MAP:
@@ -153,7 +155,10 @@ def total():
             'AwayTeamBet': bet['Bets']['Total'][1],
             'BetType': 'Total'
         })
-    return render_template('total.html', box_items=game_bets.values(), active_view=active_view, current_date=start_of_day)
+
+    # Sort game_bets by the start time of each game
+    sorted_game_bets = sorted(game_bets.values(), key=lambda x: x["GameTime"])
+    return render_template("total.html", box_items=sorted_game_bets, active_view=active_view, current_date = start_of_day.replace(tzinfo=utc).astimezone(est).strftime("%Y-%m-%d"))
 
 @app.route('/search', methods=['POST'])
 def search():
