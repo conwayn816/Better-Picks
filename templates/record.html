@@ -11,81 +11,13 @@
             margin-bottom: 10px;
             font-size: 24px; 
             transform: translateX(-50%);
+            color: white;
             
-        }
-        .container {
-            width: 80%; 
-            margin: 50px auto;
-            text-align: center;
         }
         .box-title {
             left: 50%;
             text-align: center;
             margin-bottom: 10px;
-        }
-        .search-container {
-            margin-bottom: 20px;
-            margin-left: 37%;
-        }
-        .search-container input[type=text] {
-            width: 40%;
-            padding: 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: 2px solid #ccc;
-            border-radius: 4px;
-            outline: none;
-        }
-        .profile-button {
-            display: inline-block;
-            padding: 10px 20px;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 2px solid #000; /* Black border */
-            cursor: pointer;
-            position: fixed; /* Fixed position */
-            top: 20px;
-            right: 20px;
-            margin-bottom: 20px;
-            background-color: #f4f6f8;
-        }
-        .friends-button {
-            display: inline-block;
-            padding: 10px 20px;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 2px solid #000; /* Black border */
-            cursor: pointer;
-            position: fixed; /* Fixed position */
-            top: 70px;
-            right: 20px;
-            margin-bottom: 20px;
-            background-color: #f4f6f8;
-        }
-        .button-container {
-            text-align: center;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .button-container form {
-            margin: 0 10px;
-        }
-        .button-container button {
-            padding: 5px 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .provider-odds {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            margin-left: 100px;
-        }
-        .active {
-            opacity: 0.5;
         }
         .box {
             display: inline-block;
@@ -99,15 +31,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s ease;
         }
-        .box:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .odds-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            margin-right: 100px;
-        }
         .small-button {
             position: fixed;
             top: 100px;
@@ -116,12 +39,65 @@
             display: block;
             margin-bottom: 10px;
         }
-        .db {
-            position: fixed;
-            top: 70px;
-            left: 85%; /* Set left position to 50% */
-            transform: translateX(-50%);
+        body {
+            background-color: #282B35;
+        }
+        .container {
+            width: 80%; 
+            margin: 50px auto;
+            text-align: center;
+        }
+        .box-title {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .box {
             display: inline-block;
+            width: calc(70% - 20px);
+            margin-right: 20px;
+            margin-bottom: 20px;
+            background-color: #D1D1D1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            border-radius: 10px;
+        }
+        .odds-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            margin-right: 100px;
+        }
+        .provider-odds {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .provider {
+            flex: 1;
+            text-align: left;
+        }
+        .odds {
+            flex: 1;
+            text-align: right;
+            margin: 10px;
+            margin-top: 5px;
+        }
+        .title-container {
+            position: absolute;
+            left: 20px;
+            font-family: sans-serif;
+            color: #ffffff;
+        }
+        .small-button {
+            position: fixed;
+            top: 100px;
+            left: 85%;
+            transform: translateX(-50%);
+            display: block;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -139,28 +115,19 @@
     {% for game in moneyline %}
     <div class="box">
         <div class="box-title">
-            <h2>Bet Type: <u>*MONEYLINE*</u><br><br>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }} </h2>
-        </div>
-        <div class="start-time">
-            <h3><p>Start Time: {{ game['GameTime'] }}</p></h3>
-        </div>
-        <div class="provider-odds">
-                {% for bet in game['bets'] %}
-                {{ bet['BetProvider'] }}&nbsp;&nbsp;&nbsp;
-                {% endfor %}
+            <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
+            <p><strong>Start Time: {{game['GameTime']}}</strong></p>
         </div>
         <div class="odds-container">
-            <p><strong>{{ game['HomeTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['HomeTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
+            {% for bet in game['bets'] %}
+            <div class="provider-odds">
+                <div class="provider">{{ bet['BetProvider'] }}</div><br> 
+                <strong>{{game['HomeTeam']}}: </strong>({{ bet['HomeTeamBet']['Odds']}})
+                <strong>{{game['AwayTeam']}}: </strong>({{bet['AwayTeamBet']['Odds']}})
+            </div>
+            {% endfor %}
         </div>
-        <div class="odds-container">
-            <p><strong>{{ game['AwayTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['AwayTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
+    </div>
     </div>
     {% endfor %}
     {% if not moneyline %}
@@ -173,84 +140,22 @@
     {% endif %}
 </div>
 
-<!-- Display filtered total bets -->
-<div class="container">
-    {% for game in total %}
-    <div class="box">
-        <div class="box-title">
-            <h2><strong>Bet Type: <u>*TOTAL*</u></strong><br><br>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
-        </div>
-        <div class="start-time">
-            <h3><p>Start Time: {{ game['GameTime'] }}</p></h3>
-        </div>
-        <div class="provider-odds">
-                {% for bet in game['bets'] %}
-                {{ bet['BetProvider'] }}&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
-        <div class="odds-container">
-            <p><strong>Over:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['HomeTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
-            <p style ="text-align: left;"><strong>Line:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['HomeTeamBet']['Line'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        
-        <div class="odds-container">
-            <p><strong>Under:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['AwayTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
-    </div>
-    {% endfor %}
-    {% if not total %}
-        <div class="container">
-            <div class="box">
-                <h2>No Upcoming Total Bets</h2>
-            </div>
-        </div>
-        
-    {% endif %}
-</div>
-
 <!-- Display filtered spread bets -->
 <div class="container">
     {% for game in spread %}
     <div class="box">
         <div class="box-title">
-            <h2><strong>Bet Type: <u>*SPREAD*</u></strong><br><br>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
-        </div>
-        <div class="start-time">
-            <h3><p>Start Time: {{ game['GameTime'] }}</p></h3>
-        </div>
-        <div class="provider-odds">
-                {% for bet in game['bets'] %}
-                {{ bet['BetProvider'] }}&nbsp;&nbsp;&nbsp;
-                {% endfor %}
+            <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
+            <p><strong>Start Time: {{game['GameTime']}}</strong></p>
         </div>
         <div class="odds-container">
-            <p><strong>{{ game['HomeTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ( {{ bet['HomeTeamBet']['Line'] }} , {{ bet['HomeTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
-        <!--
-        <div class="line-container">
-            <p><strong>{{"Line"}}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['HomeTeamBet']['Line'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
-        </div>
-        -->
-        <div class="odds-container">
-            <p><strong>{{ game['AwayTeam'] }}:</strong>&nbsp;&nbsp;&nbsp;
-                {% for bet in game['bets'] %}
-                ({{ bet['AwayTeamBet']['Line'] }} , {{ bet['AwayTeamBet']['Odds'] }})&nbsp;&nbsp;&nbsp;
-                {% endfor %}
+            {% for bet in game['bets'] %}
+            <div class="provider-odds">
+                <div class="provider">{{ bet['BetProvider'] }}</div><br> 
+                <strong>{{game['HomeTeam']}}: </strong>{{bet['HomeTeamBet']['Line']}} ({{bet['HomeTeamBet']['Odds']}})
+                <strong>{{game['AwayTeam']}}: </strong>{{bet['AwayTeamBet']['Line']}} ({{bet['AwayTeamBet']['Odds']}})
+            </div>
+            {% endfor %}
         </div>
     </div>
     {% endfor %}
@@ -258,6 +163,36 @@
         <div class="container">
             <div class="box">
                 <h2>No Upcoming Spread Bets</h2>
+            </div>
+        </div>
+        
+    {% endif %}
+</div>
+
+<!-- Display filtered total bets -->
+<div class="container">
+    {% for game in total %}
+    <div class="box">
+        <div class="box-title">
+            <h2>{{ game['HomeTeam'] }} vs. {{ game['AwayTeam'] }}</h2>
+            <p><strong>Start Time: {{game['GameTime']}}</strong></p>
+        </div>
+        <div class="odds-container">
+            {% for bet in game['bets'] %}
+            <div class="provider-odds">
+                <div class="provider">{{ bet['BetProvider'] }}</div><br>
+                    <strong>{{game['HomeTeam']}}: </strong>{{bet['HomeTeamBet']['Line']}} ({{bet['HomeTeamBet']['Odds']}})
+                    <strong>{{game['AwayTeam']}}: </strong>{{bet['AwayTeamBet']['Line']}} ({{bet['AwayTeamBet']['Odds']}})
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    {% if not total %}
+        <div class="container">
+            <div class="box">
+                <h2>No Upcoming Total Bets</h2>
             </div>
         </div>
         
