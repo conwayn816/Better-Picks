@@ -11,7 +11,7 @@ The loader.py file scrapes data from the different websites and loads the inform
 The mongoDB also has a separate database that includes information about different users. A single index in this database includes a:  
 * Username
 * Password (encrypted using java tokens)
-* Friends list
+* Friends list  
 Functionalities in this program allows different types of users:  
 * Admin: can visualize every user, every user's friends list, all bets placed, can delete users/ bets placed
 * Local: can visualize friends, friend's bets, and their own bets
