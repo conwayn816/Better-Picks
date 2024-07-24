@@ -13,7 +13,7 @@ The mongoDB also has a separate database that includes information about differe
 * Password (encrypted using java tokens)
 * Friends list  
 
-Functionalities in this program allows different types of users:  
+Below include the different types of users and their functionalities:    
 * Admin: can visualize every user, every user's friends list, all bets placed, can delete users/ bets placed
 * Local: can visualize friends, friend's bets, and their own bets
 * Guest: can only see their own bets
