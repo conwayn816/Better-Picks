@@ -1,7 +1,7 @@
 # Better-Picks
 
 How to use program:
--compile loader.py
+-compile loader.py\n
 -compile app.py
 -open localhost on web
 
